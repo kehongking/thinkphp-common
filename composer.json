@@ -1,0 +1,21 @@
+{
+    "name": "king/thinkphp-common",
+    "description": "thinkphp-common",
+    "type": "l",
+    "require": {
+        "php": ">=7.2",
+        "topthink/framework": ">=6.0"
+    },
+    "license": "Apache",
+    "autoload": {
+        "psr-4": {
+            "King\\ThinkphpCommon\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "k"
+        }
+    ],
+    "minimum-stability": "dev"
+}
