@@ -1,10 +1,7 @@
 # 服务监控扩展包
-### 1.在composer.json下repositories下新增
+### 1.引入
 ```
-{
-    "type": "vcs",
-    "url": "http://git.shall-buy.top/pkg/service-monitor.git"
-}
+composer require kehongking/thinkphp-common
 ```
 ### 2.执行命令安装扩展包
 ##### composer require shall-buy/service-monitor --版本
