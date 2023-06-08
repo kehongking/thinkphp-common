@@ -9,7 +9,7 @@
     "license": "Apache",
     "autoload": {
         "psr-4": {
-            "King\\ThinkphpCommon\\": "src/"
+            "KeHongKing\\ThinkphpCommon\\": "src/"
         }
     },
     "authors": [

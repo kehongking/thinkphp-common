@@ -11,5 +11,5 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
-    'King\\ThinkphpCommon\\' => array($baseDir . '/src'),
+    'KeHongKing\\ThinkphpCommon\\' => array($baseDir . '/src'),
 );

@@ -25,7 +25,7 @@ class ComposerStaticInit8c97ac8a133b50d94b51bd154bb1e81e
         ),
         'K' => 
         array (
-            'King\\ThinkphpCommon\\' => 20,
+            'KeHongKing\\ThinkphpCommon\\' => 26,
         ),
     );
 
@@ -52,7 +52,7 @@ class ComposerStaticInit8c97ac8a133b50d94b51bd154bb1e81e
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'King\\ThinkphpCommon\\' => 
+        'KeHongKing\\ThinkphpCommon\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

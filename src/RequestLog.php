@@ -1,7 +1,7 @@
 <?php
 declare (strict_types=1);
 
-namespace King\ThinkphpCommon;
+namespace KeHongKing\ThinkphpCommon;
 
 use think\facade\Log;
 use think\Response;
