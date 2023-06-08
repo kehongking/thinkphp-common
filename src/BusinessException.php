@@ -15,8 +15,8 @@ use think\exception\HttpException;
 
 class BusinessException
 {
-    static public function exception($data)
+    static public function exception($return_code, $return_message, $http_code = 400)
     {
-        throw new HttpException($data['code'], $data['message'], null, [],400);
+        throw new HttpException($return_code, $return_message, null, [], $http_code);
     }
 }

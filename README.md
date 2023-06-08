@@ -1,16 +1,15 @@
-# 服务监控扩展包
-### 1.引入
+# thinkphp公共扩展包
+### 1.执行命令安装扩展包
 ```
 composer require kehongking/thinkphp-common
 ```
-### 2.执行命令安装扩展包
-##### composer require shall-buy/service-monitor --版本
-### 4.php artisan vendor:publish --provider="ShallBuy\ServiceMonitor\serviceMonitorProvider" 发布配置文件
-### 5.php artisan serviceMonitor:init  运行此命令发送服务启动通知
-### 6.使用方法
-#### $factory = ServiceMonitorFactory::getInstance();
-| 方法    |备注     |
-|---|---|
-| $factory->monitorNotify();  |服务启动通知 |
-| $factory->dingTalkNotify();  |钉钉预警通知 |
+### 2.app\middleware.php 中定义请求日志类
+##### \KeHongKing\ThinkphpCommon\RequestLog::class,
+
+### 3.app\middleware.php 中定义跨域类
+##### \KeHongKing\ThinkphpCommon\CrossDomain::class,
+
+### 4.app\provider.php 中定义异常处理类
+##### 'think\exception\Handle' => '\\KeHongKing\\ThinkphpCommon\\HandleException',
+
 
