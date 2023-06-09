@@ -24,7 +24,7 @@
     "extra": {
         "think": {
             "config": {
-                "auth": "src/config/jwt.php"
+                "jwt": "src/config/jwt.php"
             }
         }
     }
