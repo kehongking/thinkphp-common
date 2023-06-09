@@ -38,7 +38,7 @@ class Jwt
     {
         if ($data['is_verify_account']) {
             //需要验证登录账号
-            $res = Db::table($data['table'])->where($data['condition'])->find();
+            $res = Db::name($data['table'])->where($data['condition'])->find();
             if (empty($res)) {
                 throw new HttpException(401, '请先登陆', null, [], 401);
             }

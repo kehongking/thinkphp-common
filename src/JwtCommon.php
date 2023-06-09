@@ -31,7 +31,9 @@ class JwtCommon
     protected $data = [
         'id' => 1,//登录账号唯一标识
         'source' => 'admin',//登录账户来源
-        'is_verify_account' => 0//每次验证token时,是否需要验证账号状态 1是 0否
+        'is_verify_account' => 0,//每次验证token时,是否需要验证账号状态 1是 0否
+        'table'=>'table',
+        'condition'=>[],
     ];
 
     /**
@@ -72,7 +74,7 @@ class JwtCommon
             "exp" => $time + $this->config['expire_time'], //token 过期时间
             "data" => array_merge($this->data, $data),     //记录的用户的信息，这里是自已添加上去的，如果有其它信息，可以再添加数组的键值对
         );
-        return JWT::encode($token, $this->config['key'], $this->config['alg']);  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
+        return 'Bearer ' . JWT::encode($token, $this->config['key'], $this->config['alg']);  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
     }
 
     //验证token
