@@ -26,13 +26,14 @@
         "think": {
             "database": {
                "migrations": {
-                   "20230329091605_auth_group": "src/config/auth_group.php",
-                   "20230329092241_auth_group_access": "src/config/auth_group_access.php",
-                   "20230329093355_auth_rule": "src/config/auth_rule.php"
+
                }
             },
             "config": {
-                "jwt": "src/config/jwt.php"
+                "jwt": "src/config/jwt.php",
+                "20230329091605_auth_group": "src/config/auth_group.php",
+                "20230329092241_auth_group_access": "src/config/auth_group_access.php",
+                "20230329093355_auth_rule": "src/config/auth_rule.php"
             }
         }
     }
