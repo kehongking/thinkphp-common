@@ -13,3 +13,12 @@ composer require kehongking/thinkphp-common
 ##### 'think\exception\Handle' => '\\KeHongKing\\ThinkphpCommon\\HandleException',
 
 
+
+### 5.config\middleware.php 中定义中间件
+    // 别名或分组
+    'alias'    => [
+        'jwt' => \KeHongKing\ThinkphpCommon\Jwt::class,
+        'auth' => \KeHongKing\ThinkphpCommon\Auth::class,
+    ],
+
+

@@ -13,13 +13,31 @@ namespace KeHongKing\ThinkphpCommon;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use think\facade\Config;
 
 class JwtCommon
 {
-    static private $key = 'Jumi~!@#$147258';
+    //默认配置
+    protected $config = [
+        'key' => 'Jumi~!@#$147258',//秘钥key
+        'expire_time' => 7200,//过期时间（秒）
+        'alg' => 'HS256',//加密方式HS256、HS384、HS512、RS256、ES256等
+    ];
 
-    //生成验签
-    static public function signToken($data): string
+    /**
+     * 类架构函数
+     * jwt constructor.
+     */
+    public function __construct()
+    {
+        //可设置配置项 auth, 此配置项为数组。
+        if ($auth = Config::get('jwt')) {
+            $this->config = array_merge($this->config, $auth);
+        }
+    }
+
+    //生成token
+    public static function generateToken($data): string
     {
         $time = time();
         $token = array(
@@ -34,7 +52,7 @@ class JwtCommon
     }
 
     //验证token
-    static public function checkToken($token): array
+    public static function checkToken($token): array
     {
         $status = array("code" => 400);
         try {

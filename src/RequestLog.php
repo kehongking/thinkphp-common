@@ -20,12 +20,13 @@ class RequestLog
         //添加接口请求日志
         $method = strtoupper($request->method());
         $uri = $request->pathinfo();
-        $bodyAsJson = json_encode($request->all(), JSON_UNESCAPED_UNICODE);
+        $request_data = $this->array_mb_convert_encoding($request->all());
+        $request_json = json_encode($request_data, JSON_UNESCAPED_UNICODE);
         $request_time = $this->msectime();
         $log_data = [
             '请求方式' => $method,
             '请求地址' => $uri,
-            '请求参数' => $bodyAsJson,
+            '请求参数' => $request_json,
             '请求token' => $request->header('Authorization'),
         ];
         $response = $next($request);
@@ -57,5 +58,19 @@ class RequestLog
         list($msec, $sec) = explode(' ', microtime());
         $msectime = (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
         return $msectime;
+    }
+
+    /**
+     * FunctionName: array_mb_convert_encoding
+     * Description:将数组转为utf-8编码
+     * CreateTime:2023/06/09 14:14
+     * UpdateTime:2023/06/09 14:14
+     * Author: KeHong
+     * @param $array
+     * @return mixed
+     */
+    public function array_mb_convert_encoding($array)
+    {
+        return eval('return ' . mb_convert_encoding(var_export($array, true) . ';', 'UTF-8', 'UTF-8,GBK,GB2312'));
     }
 }

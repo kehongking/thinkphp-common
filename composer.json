@@ -20,5 +20,12 @@
             "email": "634025864@qq.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "think": {
+            "config": {
+                "auth": "src/config/jwt.php"
+            }
+        }
+    }
 }
