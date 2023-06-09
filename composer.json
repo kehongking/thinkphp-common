@@ -24,10 +24,8 @@
     "minimum-stability": "dev",
     "extra": {
         "think": {
-            "database": {
-               "migrations": {
-
-               }
+            "app": {
+                "jwt11": "src/config/jwt.php"
             },
             "config": {
                 "jwt": "src/config/jwt.php",
