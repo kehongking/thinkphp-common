@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/src/config/20230329091605_auth_group.php" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/src/config/20230329092241_auth_group_access.php" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/src/config/20230329093355_auth_rule.php" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/config/auth_group.php" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/config/auth_group_access.php" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/config/auth_rule.php" charset="GBK" />
   </component>
 </project>
