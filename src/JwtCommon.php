@@ -17,6 +17,9 @@ use think\facade\Config;
 
 class JwtCommon
 {
+
+    protected static $instance;
+
     //默认配置
     protected $config = [
         'key' => 'Jumi~!@#$147258',//秘钥key
@@ -30,34 +33,48 @@ class JwtCommon
      */
     public function __construct()
     {
-        //可设置配置项 auth, 此配置项为数组。
-        if ($auth = Config::get('jwt')) {
-            $this->config = array_merge($this->config, $auth);
+        //可设置配置项 jwt, 此配置项为数组。
+        if ($jwt = Config::get('jwt')) {
+            $this->config = array_merge($this->config, $jwt);
         }
     }
 
+    /**
+     * 初始化
+     * access public
+     * @param array $options 参数
+     * return \think\Request
+     */
+    public static function instance($options = [])
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static($options);
+        }
+        return self::$instance;
+    }
+
     //生成token
-    public static function generateToken($data): string
+    public function generateToken($data)
     {
         $time = time();
         $token = array(
-            "iss" => self::$key,  //签发者 可以为空
+            "iss" => $this->config['key'],  //签发者 可以为空
             "aud" => '',          //面象的用户，可以为空
             "iat" => $time,      //签发时间
             "nbf" => $time,    //在什么时候jwt开始生效
-            "exp" => $time + 720000, //token 过期时间
+            "exp" => $time + $this->config['expire_time'], //token 过期时间
             "data" => $data         //记录的user的信息，这里是自已添加上去的，如果有其它信息，可以再添加数组的键值对
         );
-        return JWT::encode($token, self::$key, "HS256");  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
+        return JWT::encode($token, $this->config['key'], $this->config['alg']);  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
     }
 
     //验证token
-    public static function checkToken($token): array
+    public function checkToken($token)
     {
         $status = array("code" => 400);
         try {
             JWT::$leeway = 60;//当前时间减去60，把时间留点余地
-            $decoded = JWT::decode($token, new Key(self::$key, 'HS256')); //同上的方式，这里要和签发的时候对应
+            $decoded = JWT::decode($token, new Key($this->config['key'], $this->config['alg'])); //同上的方式，这里要和签发的时候对应
             $arr = (array)$decoded;
             $res['code'] = 200;
             $res['data'] = $arr['data'];

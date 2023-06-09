@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace KeHongKing\ThinkphpCommon;
 
 use think\exception\HttpException;
+use think\facade\Db;
 
 class Jwt
 {
@@ -20,10 +21,11 @@ class Jwt
         if (empty($token)) throw new HttpException(401, '请先登陆', null, [], 401);
         $token = explode(' ', $token)[1];
         //验证token
-        $result = JwtCommon::checkToken($token);
+        $jwt = JwtCommon::instance();
+        $result = $jwt->checkToken($token);
         if ($result['code'] == 200) {
             //验证当前登录账号是否正常
-           // $this->verifyAccount($result['data']);
+            $this->verifyAccount($result['data']);
             $request->request_user_id = $result['data']['id'];
             $request->request_source = $result['data']['source'];
         } else {
@@ -32,15 +34,14 @@ class Jwt
         return $next($request);
     }
 
-    /*public function verifyAccount($data)
+    public function verifyAccount($data)
     {
-        $user = [];
-        if ($data['source'] == 'admin') {
-            //总后台账户
-            $user = AdminUser::where('id', $data['id'])->where('status', StatusConstant::TABLE_STATUS_NORMAL)->find();
-        } else {
-            BusinessException::exception(CodeMessageConstant::SOURCE_ACCOUNT_ERROR);
+        if ($data['is_verify_account']) {
+            //需要验证登录账号
+            $res = Db::table($data['table'])->where($data['condition'])->find();
+            if (empty($res)) {
+                throw new HttpException(401, '请先登陆', null, [], 401);
+            }
         }
-        if (empty($user)) throw new HttpException(401, '请先登陆', null, [], 401);
-    }*/
+    }
 }
