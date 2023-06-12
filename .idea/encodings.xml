@@ -7,5 +7,6 @@
     <file url="file://$PROJECT_DIR$/src/config/auth_group.php" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/config/auth_group_access.php" charset="GBK" />
     <file url="file://$PROJECT_DIR$/src/config/auth_rule.php" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/permission/Permission.php" charset="GBK" />
   </component>
 </project>
