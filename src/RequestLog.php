@@ -71,6 +71,7 @@ class RequestLog
      */
     public function array_mb_convert_encoding($array)
     {
+        if (($_FILES)) return $array;
         return eval('return ' . mb_convert_encoding(var_export($array, true) . ';', 'UTF-8', 'UTF-8,GBK,GB2312'));
     }
 }
