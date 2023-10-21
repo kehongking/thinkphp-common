@@ -15,6 +15,15 @@ use think\exception\HttpException;
 
 class BusinessException
 {
+    /**
+     * FunctionName: exception
+     * Description:抛异常
+     * CreateTime:2023/10/21 11:25
+     * UpdateTime:2023/10/21 11:25
+     * Author: KeHong
+     * @param $data
+     * @return mixed
+     */
     static public function exception($data)
     {
         $code = $data['code'] ?? 400;
