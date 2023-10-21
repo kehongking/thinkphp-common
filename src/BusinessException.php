@@ -15,8 +15,15 @@ use think\exception\HttpException;
 
 class BusinessException
 {
-    static public function exception($return_code, $return_message, $http_code = 400)
+    static public function exception($data)
     {
-        throw new HttpException($return_code, $return_message, null, [], $http_code);
+        $code = $data['code'] ?? 400;
+        $http_code = $data['http_code'] ?? 400;
+        if (is_string($data)) {
+            $message = $data;
+        } else {
+            $message = $data['message'];
+        }
+        throw new HttpException($code, $message, null, [], $http_code);
     }
 }
