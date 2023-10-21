@@ -47,7 +47,6 @@ class HandleException extends Handle
         //$e instanceof PDOException ||
         if ($e instanceof Exception || $e instanceof InvalidArgumentException || $e instanceof ErrorException || $e instanceof ParseError || $e instanceof TypeError) {
             $this->reportException($request, $e);
-            dump($e);
             return Result::error(500, '系统异常，请稍后再试', 500);
         }
         //其他错误
