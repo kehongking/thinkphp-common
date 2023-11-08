@@ -24,6 +24,7 @@ class RequestLog
         $request_json = json_encode($request_data, JSON_UNESCAPED_UNICODE);
         $request_time = $this->msectime();
         $log_data = [
+            '请求IP' => request()->ip(),
             '请求方式' => $method,
             '请求地址' => $uri,
             '请求参数' => $request_json,
@@ -43,8 +44,12 @@ class RequestLog
             'msg' => $data['msg'] ?? 'success',
             'data' => $code == 200 ? $data : [],
         ];
-        if ($uri == 'core/test') {
-            return $response;
+        //获取配置
+        $requestLogConfig = Config::get('requestLog');
+        if ($method == 'OPTIONS') {
+            return json(['code' => 0, 'msg' => 'success', 'data' => []]);
+        } elseif (in_array($uri, $requestLogConfig['uri'])) {
+            return $response;//原样输出数据格式。
         } else {
             $return_data = serialize($return_data);
             $return_data = mb_convert_encoding($return_data, 'UTF-8');
