@@ -25,7 +25,8 @@
     "extra": {
         "think": {
             "config": {
-                "jwt": "src/config/jwt.php"
+                "jwt": "src/config/jwt.php",
+                "requestLog": "src/config/requestLog.php"
             }
         }
     }
