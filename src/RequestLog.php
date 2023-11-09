@@ -32,6 +32,9 @@ class RequestLog
             '请求token' => $request->header('Authorization'),
         ];
         $response = $next($request);
+        if ($method == 'OPTIONS') {
+            return json(['code' => 0, 'msg' => 'success', 'data' => []]);
+        }
         //添加接口返回日志
         $response_time = $this->msectime();
         $code = $response->getCode();
