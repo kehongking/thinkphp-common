@@ -38,24 +38,30 @@ class RequestLog
         $log_data['响应code'] = $code;
         $log_data['响应数据'] = json_encode($data, JSON_UNESCAPED_UNICODE);
         $log_data['响应时间'] = $response_time - $request_time . 'ms';
-        Log::info($log_data);
+        //获取配置
+        $requestLogConfig = Config::get('requestLog');
+        //判断是否需要添加日志
+        if (!in_array($uri, $requestLogConfig['log_uri'])) {
+            Log::info($log_data);
+        }
+        //获取配置判断是否需要原样数据返回
+        if (!empty($requestLogConfig['uri'])) {
+            foreach ($requestLogConfig['uri'] as $key => $value) {
+                if (strpos($uri, $value) !== false) {
+                    return $response;//数据格式原样返回
+                }
+            }
+        }
+        //返回统一处理数据
         $return_data = [
             'code' => $code == 200 ? 0 : $data['code'],
             'msg' => $data['msg'] ?? 'success',
             'data' => $code == 200 ? $data : [],
         ];
-        //获取配置
-        $requestLogConfig = Config::get('requestLog');
-        if ($method == 'OPTIONS') {
-            return json(['code' => 0, 'msg' => 'success', 'data' => []]);
-        } elseif (in_array($uri, $requestLogConfig['uri'])) {
-            return $response;//原样输出数据格式。
-        } else {
-            $return_data = serialize($return_data);
-            $return_data = mb_convert_encoding($return_data, 'UTF-8');
-            $return_data = unserialize($return_data);
-            return json($return_data, $code);
-        }
+        $return_data = serialize($return_data);
+        $return_data = mb_convert_encoding($return_data, 'UTF-8');
+        $return_data = unserialize($return_data);
+        return json($return_data, $code);
     }
 
     public function msectime()

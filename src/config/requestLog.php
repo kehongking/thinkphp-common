@@ -10,4 +10,5 @@
  */
 return [
     'uri' => [],//原样输出数据格式的接口地址如: api/user/login。
+    'log_uri' => [],//不加入日志接口地址如: api/user/login。
 ];
