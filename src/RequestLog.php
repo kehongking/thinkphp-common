@@ -5,6 +5,7 @@ namespace KeHongKing\ThinkphpCommon;
 
 use think\facade\Log;
 use think\Response;
+use think\facade\Config;
 
 class RequestLog
 {
