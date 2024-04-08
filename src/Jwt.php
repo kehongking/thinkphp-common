@@ -38,9 +38,13 @@ class Jwt
     {
         if ($data['is_verify_account']) {
             //需要验证登录账号
-            $res = Db::name($data['table'])->where($data['condition'])->find();
-            if (empty($res)) {
-                throw new HttpException(401, '请先登陆', null, [], 401);
+            $user = Db::name($data['table_user'])->where($data['condition_user'])->find();
+            if (empty($user)) {
+                throw new HttpException(402, '您的账号已被禁用', null, [], 402);
+            }
+            $role = Db::name($data['table_role'])->where($data['condition_role'])->find();
+            if (empty($role)) {
+                throw new HttpException(402, '您的账号已被禁用', null, [], 402);
             }
         }
     }

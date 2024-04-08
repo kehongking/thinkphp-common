@@ -30,8 +30,10 @@ use KeHongKing\ThinkphpCommon\JwtCommon;
         'id' => 1,                       //登录账号唯一标识
         'source' => 'admin',             //登录账户来源
         'is_verify_account' => 0,        //每次验证token时,是否需要验证账号状态 1是 0否
-        'table' => 'admin_user',         //is_verify_account传1时,此值传验证码数据的表名
-        'condition' => [['id', '=', 1]], //is_verify_account传1时,此值传验证条件二维数组
+        'table_user' => 'admin_user',         //is_verify_account传1时,此值传验证码数据的表名
+        'condition_user' => [['id', '=', 1]], //is_verify_account传1时,此值传验证条件二维数组
+        'table_role' => 'auth_group',         //is_verify_account传1时,此值传验证码数据的表名
+        'condition_role' => [['id', '=', 1]], //is_verify_account传1时,此值传验证条件二维数组
     ];
 $jwt = JwtCommon::instance();
 $token =  $jwt->generateToken($data);
