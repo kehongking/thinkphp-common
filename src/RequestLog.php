@@ -60,7 +60,7 @@ class RequestLog
         $return_data = [
             'code' => $code == 200 ? 0 : $data['code'],
             'msg' => $data['msg'] ?? 'success',
-            'data' => $code == 200 ? $data : [],
+            'data' => $code == 200 ? $data : null,
         ];
         $return_data = serialize($return_data);
         $return_data = mb_convert_encoding($return_data, 'UTF-8');
