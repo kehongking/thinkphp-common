@@ -46,7 +46,7 @@ class RequestLog
         $requestLogConfig = Config::get('requestLog');
         //判断是否需要添加日志
         if (!in_array($uri, $requestLogConfig['log_uri'])) {
-            Log::info($log_data);
+            Log::info(json_encode($log_data,JSON_UNESCAPED_UNICODE));
         }
         //获取配置判断是否需要原样数据返回
         if (!empty($requestLogConfig['uri'])) {
