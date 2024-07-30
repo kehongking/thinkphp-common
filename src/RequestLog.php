@@ -40,13 +40,13 @@ class RequestLog
         $code = $response->getCode();
         $data = $response->getData();
         $log_data['响应code'] = $code;
-        $log_data['响应数据'] = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $log_data['响应数据'] = stripslashes(json_encode($data, JSON_UNESCAPED_UNICODE));
         $log_data['响应时间'] = $response_time - $request_time . 'ms';
         //获取配置
         $requestLogConfig = Config::get('requestLog');
         //判断是否需要添加日志
         if (!in_array($uri, $requestLogConfig['log_uri'])) {
-            Log::info(json_encode($log_data,JSON_UNESCAPED_UNICODE));
+            Log::info(stripslashes(json_encode($log_data, JSON_UNESCAPED_UNICODE)));
         }
         //获取配置判断是否需要原样数据返回
         if (!empty($requestLogConfig['uri'])) {
