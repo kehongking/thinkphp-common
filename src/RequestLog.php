@@ -22,7 +22,7 @@ class RequestLog
         //添加接口请求日志
         $method = strtoupper($request->method());
         $uri = $request->pathinfo();
-        $aes_apply_name = mb_substr($uri, 0, 5, "UTF-8");
+        $aes_apply_name = explode('/',$uri)['0'];
         $app_env = env('APP_ENV');
         $params = $request->all();
         //获取配置
