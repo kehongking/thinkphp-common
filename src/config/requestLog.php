@@ -17,4 +17,10 @@ return [
     'log_uri' => [
 
     ],
+    //需要加密的应用名称如:admin
+    'aes_apply_name' => [
+
+    ],
+    'aes_key' => '',//aes加密key
+    'aes_iv' => '',//aes加密iv
 ];
