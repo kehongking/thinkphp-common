@@ -21,6 +21,12 @@ return [
     'aes_apply_name' => [
 
     ],
-    'aes_key' => '',//aes加密key
-    'aes_iv' => '',//aes加密iv
+    //aes加密key
+    'aes_key' => '',
+    //aes加密iv
+    'aes_iv' => '',
+    //aes加密的环境
+    'aes_env' => [
+
+    ],
 ];

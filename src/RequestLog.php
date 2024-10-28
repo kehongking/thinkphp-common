@@ -29,7 +29,8 @@ class RequestLog
         $requestLogConfig = Config::get('requestLog');
         //判断是否需要解密
         $aes_apply_arr = $requestLogConfig['aes_apply_name'];
-        if (in_array($aes_apply_name, $aes_apply_arr) && $method != 'OPTIONS' && $app_env == 'prod') {
+        $aes_env = $requestLogConfig['aes_env'];
+        if (in_array($aes_apply_name, $aes_apply_arr) && $method != 'OPTIONS' && in_array($app_env, $aes_env)) {
             $params = $this->aesDecrypt($request);
         }
         $request_data = $this->array_mb_convert_encoding($params);
@@ -75,7 +76,7 @@ class RequestLog
         $return_data = mb_convert_encoding($return_data, 'UTF-8');
         $return_data = unserialize($return_data);
         //返回数据加密
-        if (in_array($aes_apply_name, $aes_apply_arr) && $return_data['code'] == 0 && $app_env == 'prod') {
+        if (in_array($aes_apply_name, $aes_apply_arr) && $return_data['code'] == 0 && in_array($app_env, $aes_env)) {
             return $this->encrypt($return_data, $code);
         }
         return json($return_data, $code);
