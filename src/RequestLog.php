@@ -3,7 +3,7 @@ declare (strict_types=1);
 
 namespace KeHongKing\ThinkphpCommon;
 
-use app\business\BusinessException;
+use think\exception\HttpException;
 use think\facade\Log;
 use think\Response;
 use think\facade\Config;
@@ -22,7 +22,7 @@ class RequestLog
         //添加接口请求日志
         $method = strtoupper($request->method());
         $uri = $request->pathinfo();
-        $aes_apply_name = explode('/',$uri)['0'];
+        $aes_apply_name = explode('/', $uri)['0'];
         $app_env = env('APP_ENV');
         $params = $request->all();
         //获取配置
@@ -99,7 +99,7 @@ class RequestLog
         } elseif ($request->isPost()) {
             $request->withPost($params);
         } else {
-            throw new HttpException(400, '请求方式有误,联系技术支持', null, [], 400);
+            throw new HttpException(400, '加密暂只支持GET、POST', null, [], 400);
         }
         return $params;
     }
@@ -110,7 +110,7 @@ class RequestLog
         $encryptedData = base64_decode($encryptedData);
         $requestLogConfig = Config::get('requestLog');
         $result = openssl_decrypt($encryptedData, "AES-256-CBC", $requestLogConfig['aes_key'], 1, $requestLogConfig['aes_iv']);
-        if (!$result) throw new HttpException(402, '数据有误!', null, [], 402);
+        if (!$result) throw new HttpException(402, '解密数据有误!', null, [], 402);
         return json_decode($result, true);
     }
 
