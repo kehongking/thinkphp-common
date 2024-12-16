@@ -7,7 +7,8 @@
         "topthink/framework": "^6.0",
         "topthink/think-migration":"^3.0",
         "firebase/php-jwt": "^6.4",
-        "wenhainan/thinkphp6-auth": "^1.1"
+        "wenhainan/thinkphp6-auth": "^1.1",
+        "openspout/openspout": "^4.13"
     },
     "license": "MIT",
     "autoload": {
