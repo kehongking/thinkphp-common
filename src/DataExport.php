@@ -44,13 +44,13 @@ class DataExport
             for ($is = 0; $is < count($keys_one); $is++) {
                 $field_arr = explode('.', $keys_one[$is]);
                 $field_arr_count = count($field_arr);
-                if ($field_arr_count == 1) {
+                if ($field_arr_count == 1 && !empty($vs[$field_arr[0]])) {
                     $vals = $vs[$field_arr[0]];
-                } elseif ($field_arr_count == 2) {
+                } elseif ($field_arr_count == 2 && !empty($vs[$field_arr[0]][$field_arr[1]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]];
-                } elseif ($field_arr_count == 3) {
+                } elseif ($field_arr_count == 3 && !empty($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]][$field_arr[2]];
-                } elseif ($field_arr_count == 4) {
+                } elseif ($field_arr_count == 4 && !empty($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]];
                 }
                 if (empty($vals)) {
@@ -80,13 +80,13 @@ class DataExport
                 for ($iis = 0; $iis < count($keys_two); $iis++) {
                     $field_arr = explode('.', $keys_two[$iis]);
                     $field_arr_count = count($field_arr);
-                    if ($field_arr_count == 1) {
+                    if ($field_arr_count == 1 && !empty($vvs[$field_arr[0]])) {
                         $vals = $vvs[$field_arr[0]];
-                    } elseif ($field_arr_count == 2) {
+                    } elseif ($field_arr_count == 2 && !empty($vvs[$field_arr[0]][$field_arr[1]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]];
-                    } elseif ($field_arr_count == 3) {
+                    } elseif ($field_arr_count == 3 && !empty($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]];
-                    } elseif ($field_arr_count == 4) {
+                    } elseif ($field_arr_count == 4 && !empty($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]];
                     }
                     if (empty($vals)) {
