@@ -42,6 +42,7 @@ class DataExport
         foreach ($params as $ks => $vs) {
             $cells = [];
             for ($is = 0; $is < count($keys_one); $is++) {
+                $vals = '';
                 $field_arr = explode('.', $keys_one[$is]);
                 $field_arr_count = count($field_arr);
                 if ($field_arr_count == 1 && !empty($vs[$field_arr[0]])) {
@@ -78,6 +79,7 @@ class DataExport
             foreach ($paramss as $kks => $vvs) {
                 $cells = [];
                 for ($iis = 0; $iis < count($keys_two); $iis++) {
+                    $vals = '';
                     $field_arr = explode('.', $keys_two[$iis]);
                     $field_arr_count = count($field_arr);
                     if ($field_arr_count == 1 && !empty($vvs[$field_arr[0]])) {
