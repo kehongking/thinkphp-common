@@ -34,7 +34,7 @@ class Jwt
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
             //验证环境是否正常
-            if (env('APP_ENV', '') != $result['data']['app_env']) {
+            if (!isset($result['data']['app_env']) || env('APP_ENV', '') != $result['data']['app_env']) {
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
             //验证当前登录账号是否正常
