@@ -53,7 +53,7 @@ class RequestLog
         ];
         $response = $next($request);
         if ($method == 'OPTIONS') {
-            return json(['code' => 0, 'msg' => 'success', 'data' => []]);
+            return json(['code' => 0, 'msg' => 'success', 'data' => [], 'request_id' => $request->header('request-id', '')]);
         }
         //添加接口返回日志
         $response_time = $this->msectime();
@@ -79,6 +79,7 @@ class RequestLog
             'code' => $code == 200 ? 0 : $data['code'],
             'msg' => $data['msg'] ?? 'success',
             'data' => $code == 200 ? $data : null,
+            'request_id' => $request->header('request-id', ''),
         ];
         $return_data = serialize($return_data);
         $return_data = mb_convert_encoding($return_data, 'UTF-8');
