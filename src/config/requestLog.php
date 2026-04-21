@@ -21,12 +21,16 @@ return [
     'aes_apply_name' => [
 
     ],
-    //aes加密key
-    'aes_key' => '',
-    //aes加密iv
-    'aes_iv' => '',
     //aes加密的环境
     'aes_env' => [
+
+    ],
+    //请求时间戳不能超过多少秒
+    'request_time' => '60',
+    //aes加密rsa私钥路径
+    'rsa_private_path' => root_path() . 'app/rsa/aes_private_key.pem',
+    //不加密接口地址如: mini/wx/authorize
+    'whitelist_encryption_uri' => [
 
     ],
 ];

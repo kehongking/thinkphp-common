@@ -19,19 +19,26 @@ class RequestLog
      */
     public function handle($request, \Closure $next)
     {
-        //添加接口请求日志
+        //获取基础参数
+        $params = $request->all();
         $method = strtoupper($request->method());
         $uri = $request->pathinfo();
-        $aes_apply_name = explode('/', $uri)['0'];
         $app_env = env('APP_ENV');
-        $params = $request->all();
-        //获取配置
         $requestLogConfig = Config::get('requestLog');
-        //判断是否需要解密
+        $apply_name = explode('/', $uri)[0];
         $aes_apply_arr = $requestLogConfig['aes_apply_name'];
         $aes_env = $requestLogConfig['aes_env'];
-        if (in_array($aes_apply_name, $aes_apply_arr) && $method != 'OPTIONS' && in_array($app_env, $aes_env)) {
-            $params = $this->aesDecrypt($request);
+        $whitelist_encryption_uri = $requestLogConfig['whitelist_encryption_uri'];
+        $is_aes = 0;
+        $key = '';
+        $iv = '';
+        //判断是否需要解密
+        if ($method != 'OPTIONS' && in_array($apply_name, $aes_apply_arr) && in_array($app_env, $aes_env) && !in_array($uri, $whitelist_encryption_uri)) {
+            $aesDecrypt = $this->dataHandle($request);
+            $params = $aesDecrypt['params'];
+            $key = $aesDecrypt['key'];
+            $iv = $aesDecrypt['iv'];
+            $is_aes = 1;
         }
         $request_data = $this->array_mb_convert_encoding($params);
         $request_json = json_encode($request_data, JSON_UNESCAPED_UNICODE);
@@ -42,6 +49,7 @@ class RequestLog
             '请求地址' => $uri,
             '请求参数' => $request_json,
             '请求token' => $request->header('Authorization'),
+            '请求request-id' => $request->header('request-id'),
         ];
         $response = $next($request);
         if ($method == 'OPTIONS') {
@@ -76,17 +84,21 @@ class RequestLog
         $return_data = mb_convert_encoding($return_data, 'UTF-8');
         $return_data = unserialize($return_data);
         //返回数据加密
-        if (in_array($aes_apply_name, $aes_apply_arr) && $return_data['code'] == 0 && in_array($app_env, $aes_env)) {
-            return $this->encrypt($return_data, $code);
+        if ($is_aes == 1) {
+            return $this->encrypt($return_data, $code, $key, $iv);
         }
         return json($return_data, $code);
     }
 
-    public function aesDecrypt($request)
+    public function dataHandle($request)
     {
         $params = $request->param();
-        if (empty($params['data'])) return $params;
-        $params = $this->decrypt($params['data']);
+        if (!isset($params['data']) || empty($request->header('data-key')) || empty($request->header('data-iv'))) {
+            throw new HttpException(400, '请求有误', null, [], 400);
+        }
+        //数据aes解密
+        $result = $this->aesDecrypt($params['data'], $request);
+        $params = $result['params'];
         foreach ($params as $kk => $vv) {
             //处理参数为null的，不然auth包会报错
             if ($vv === null) {
@@ -101,24 +113,97 @@ class RequestLog
         } else {
             throw new HttpException(400, '加密暂只支持GET、POST', null, [], 400);
         }
-        return $params;
+        return ['params' => $params, 'key' => $result['key'], 'iv' => $result['iv']];
     }
 
-    public function decrypt($encryptedData)
+    public function aesDecrypt($encryptedData, $request)
     {
         $encryptedData = str_replace(' ', '+', $encryptedData);
         $encryptedData = base64_decode($encryptedData);
-        $requestLogConfig = Config::get('requestLog');
-        $result = openssl_decrypt($encryptedData, "AES-256-CBC", $requestLogConfig['aes_key'], 1, $requestLogConfig['aes_iv']);
-        if (!$result) throw new HttpException(402, '解密数据有误!', null, [], 402);
-        return json_decode($result, true);
+        if (empty($encryptedData)) {
+            throw new HttpException(400, '数据有误', null, [], 400);
+        }
+        //rsa解密得到aes的key
+        $key = $this->rsaDecrypt($request->header('data-key'));
+        $iv = $this->rsaDecrypt($request->header('data-iv'));
+        $result = openssl_decrypt($encryptedData, "AES-256-CBC", $key, 1, $iv);
+        if (empty($result)) {
+            throw new HttpException(400, '数据有误', null, [], 400);
+        }
+        $request_data = json_decode($result, true);
+        //验证请求是否过期
+        if (empty($request_data['request_time']) || !$this->checkTimestampWithError($request_data['request_time'])) {
+            throw new HttpException(400, '请求超时', null, [], 400);
+        }
+        return [
+            'params' => $request_data,
+            'key' => $key,
+            'iv' => $iv,
+        ];
     }
 
-    public function encrypt($return_data, $code)
+    //传入的毫秒时间戳与当前时间误差是否在60秒内
+    public function checkTimestampWithError($msTimestamp)
     {
-        $requestLogConfig = Config::get('requestLog');
+        // 先判断是不是合法的 13 位毫秒戳
+        if (!is_scalar($msTimestamp) || !ctype_digit((string)$msTimestamp) || strlen((string)$msTimestamp) !== 13) {
+            return false;
+        }
+        // 当前时间毫秒戳
+        $nowMs = (int)(microtime(true) * 1000);
+        // 传入的时间戳
+        $targetMs = (int)$msTimestamp;
+        // 计算差值的绝对值
+        $diff = abs($nowMs - $targetMs);
+        // 允许误差：60 秒 = 60000 毫秒
+        $time = Config::get('requestLog')['request_time'] * 1000;
+        return $diff <= $time;
+    }
+
+    public function rsaDecrypt($encryptedData)
+    {
+        // 关键：捕获所有警告 + 错误
+        set_error_handler(function ($errno, $errstr) {
+            // 只要是openssl相关的警告/错误，直接抛异常
+            if (str_contains($errstr, 'openssl') || str_contains($errstr, 'IV')) {
+                throw new \Exception($errstr);
+            }
+        }, E_ALL); //这里必须E_ALL
+        try {
+            $private_path = Config::get('requestLog')['rsa_private_path'];
+            if (!file_exists($private_path)) {
+                throw new HttpException(400, '私钥文件路径不存在', null, [], 400);
+            }
+            $private = openssl_pkey_get_private(file_get_contents($private_path));
+            if (empty($private)) {
+                throw new HttpException(400, '私钥有误', null, [], 400);
+            }
+            $encryptedData = base64_decode($encryptedData);
+            if (empty($encryptedData)) {
+                throw new HttpException(400, '请求有误', null, [], 400);
+            }
+            $decrypted = '';
+            // RSA解密，IV为空是正常的，但PHP8+会报警告
+            $ok = openssl_private_decrypt($encryptedData, $decrypted, $private);
+            // 解密失败也抛异常
+            if (!$ok) {
+                throw new HttpException(400, '请求有误', null, [], 400);
+            }
+            // 恢复错误处理
+            restore_error_handler();
+            return $decrypted;
+        } catch (\Throwable $e) { //关键：用 Throwable才能接住所有类型
+            //恢复错误处理
+            restore_error_handler();
+            //统一返回异常
+            throw new HttpException(400, $e->getMessage(), null, [], 400);
+        }
+    }
+
+    public function encrypt($return_data, $code, $key, $iv)
+    {
         $json = json_encode($return_data['data'], JSON_UNESCAPED_UNICODE);
-        $encryptedData = openssl_encrypt($json, 'AES-256-CBC', $requestLogConfig['aes_key'], 1, $requestLogConfig['aes_iv']);
+        $encryptedData = openssl_encrypt($json, 'AES-256-CBC', $key, 1, $iv);
         $encryptedData = base64_encode($encryptedData);
         $return_data['data'] = $encryptedData;
         return json($return_data, $code);

@@ -22,18 +22,18 @@ class JwtCommon
 
     //默认配置
     protected $config = [
-        'key' => 'Jumi~!@#$147258',//秘钥key
-        'expire_time' => 7200,//过期时间（秒）
-        'alg' => 'HS256',//加密方式HS256、HS384、HS512、RS256、ES256等
+        'private_key' => '',//rsa私钥路径
+        'public_key' => '',//rsa公钥路径
     ];
 
     //默认jwt加密基础数据
     protected $data = [
         'id' => 1,//登录账号唯一标识
         'source' => 'admin',//登录账户来源
+        'app_env' => 'prod',//登录环境:prod,pre,test
         'is_verify_account' => 0,//每次验证token时,是否需要验证账号状态 1是 0否
-        'table'=>'table',
-        'condition'=>[],
+        'table' => 'table',
+        'condition' => [],
     ];
 
     /**
@@ -63,18 +63,23 @@ class JwtCommon
     }
 
     //生成token
-    public function generateToken($data)
+    public function generateToken($data, $exp = 36000, $iss = ''): string
     {
         $time = time();
         $token = array(
-            "iss" => $this->config['key'],  //签发者 可以为空
+            "iss" => $iss,        //签发者 可以为空
             "aud" => '',          //面象的用户，可以为空
-            "iat" => $time,      //签发时间
-            "nbf" => $time,    //在什么时候jwt开始生效
-            "exp" => $time + $this->config['expire_time'], //token 过期时间
+            "iat" => $time,       //签发时间
+            "nbf" => $time,       //在什么时候jwt开始生效
+            "exp" => $time + $exp, //token 过期时间
             "data" => array_merge($this->data, $data),     //记录的用户的信息，这里是自已添加上去的，如果有其它信息，可以再添加数组的键值对
         );
-        return 'Bearer ' . JWT::encode($token, $this->config['key'], $this->config['alg']);  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
+        $privatePath = $this->config['private_key'];
+        if (!file_exists($privatePath)) {
+            throw new HttpException(400, '私钥文件路径不存在', null, [], 400);
+        }
+        $privateKey = file_get_contents($privatePath);
+        return JWT::encode($token, $privateKey, 'RS256');  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
     }
 
     //验证token
@@ -83,7 +88,12 @@ class JwtCommon
         $status = array("code" => 400);
         try {
             JWT::$leeway = 60;//当前时间减去60，把时间留点余地
-            $decoded = JWT::decode($token, new Key($this->config['key'], $this->config['alg'])); //同上的方式，这里要和签发的时候对应
+            $publicPath = $this->config['public_key'];
+            if (!file_exists($publicPath)) {
+                throw new HttpException(400, '公钥文件路径不存在', null, [], 400);
+            }
+            $publicKey = file_get_contents($publicPath);
+            $decoded = JWT::decode($token, new Key($publicKey, 'RS256')); //同上的方式，这里要和签发的时候对应
             $arr = (array)$decoded;
             $res['code'] = 200;
             $res['data'] = $arr['data'];

@@ -9,7 +9,6 @@
  * @version v1.0
  */
 return [
-    'key' => 'Jumi~!@#$147258',//秘钥key
-    'expire_time' => 7200,//过期时间（秒）
-    'alg' => 'HS256',//加密方式HS256、HS384、HS512、RS256、ES256等
+    'private_key' => root_path() . 'app/rsa/token_private_key.pem',//rsa私钥路径
+    'public_key' => root_path() . 'app/rsa/token_public_key.pem',//rsa公钥路径
 ];
