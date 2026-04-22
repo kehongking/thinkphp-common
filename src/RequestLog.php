@@ -30,14 +30,14 @@ class RequestLog
         $aes_env = $requestLogConfig['aes_env'];
         $whitelist_encryption_uri = $requestLogConfig['whitelist_encryption_uri'];
         $is_aes = 0;
-        $key = '';
-        $iv = '';
+        $aes_key = '';
+        $aes_iv = '';
         //判断是否需要解密
         if ($method != 'OPTIONS' && in_array($apply_name, $aes_apply_arr) && in_array($app_env, $aes_env) && !in_array($uri, $whitelist_encryption_uri)) {
             $aesDecrypt = $this->dataHandle($request);
             $params = $aesDecrypt['params'];
-            $key = $aesDecrypt['key'];
-            $iv = $aesDecrypt['iv'];
+            $aes_key = $aesDecrypt['aes_key'];
+            $aes_iv = $aesDecrypt['aes_iv'];
             $is_aes = 1;
         }
         $request_data = $this->array_mb_convert_encoding($params);
@@ -86,7 +86,7 @@ class RequestLog
         $return_data = unserialize($return_data);
         //返回数据加密
         if ($is_aes == 1) {
-            return $this->encrypt($return_data, $code, $key, $iv);
+            return $this->encrypt($return_data, $code, $aes_key, $aes_iv);
         }
         return json($return_data, $code);
     }
@@ -114,7 +114,7 @@ class RequestLog
         } else {
             throw new HttpException(400, '加密暂只支持GET、POST', null, [], 400);
         }
-        return ['params' => $params, 'key' => $result['key'], 'iv' => $result['iv']];
+        return ['params' => $params, 'aes_key' => $result['aes_key'], 'aes_iv' => $result['aes_iv']];
     }
 
     public function aesDecrypt($encryptedData, $request)
@@ -125,9 +125,9 @@ class RequestLog
             throw new HttpException(400, '数据有误', null, [], 400);
         }
         //rsa解密得到aes的key
-        $key = $this->rsaDecrypt($request->header('data-key'));
-        $iv = $this->rsaDecrypt($request->header('data-iv'));
-        $result = openssl_decrypt($encryptedData, "AES-256-CBC", $key, 1, $iv);
+        $aes_key = $this->rsaDecrypt($request->header('data-key'));
+        $aes_iv = $this->rsaDecrypt($request->header('data-iv'));
+        $result = openssl_decrypt($encryptedData, "AES-256-CBC", $aes_key, 1, $aes_iv);
         if (empty($result)) {
             throw new HttpException(400, '数据有误', null, [], 400);
         }
@@ -138,8 +138,8 @@ class RequestLog
         }
         return [
             'params' => $request_data,
-            'key' => $key,
-            'iv' => $iv,
+            'aes_key' => $aes_key,
+            'aes_iv' => $aes_iv,
         ];
     }
 
@@ -201,10 +201,10 @@ class RequestLog
         }
     }
 
-    public function encrypt($return_data, $code, $key, $iv)
+    public function encrypt($return_data, $code, $aes_key, $aes_iv)
     {
         $json = json_encode($return_data['data'], JSON_UNESCAPED_UNICODE);
-        $encryptedData = openssl_encrypt($json, 'AES-256-CBC', $key, 1, $iv);
+        $encryptedData = openssl_encrypt($json, 'AES-256-CBC', $aes_key, 1, $aes_iv);
         $encryptedData = base64_encode($encryptedData);
         $return_data['data'] = $encryptedData;
         return json($return_data, $code);
