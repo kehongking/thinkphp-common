@@ -5,6 +5,7 @@ namespace KeHongKing\ThinkphpCommon;
 
 use think\exception\HttpException;
 use think\facade\Db;
+use think\facade\Config;
 
 class Jwt
 {
@@ -28,13 +29,18 @@ class Jwt
         $jwt = JwtCommon::instance();
         $result = $jwt->checkToken($token);
         if ($result['code'] == 200) {
-            $appName = app('http')->getName();
-            //验证来源是否正常
-            if ($appName != $result['data']['source']) {
+            //验证项目名称是否正常
+            $project_name = Config::get('requestLog')['app_name'] ?? '';
+            if (!isset($result['data']['app_name']) || $project_name != $result['data']['app_name']) {
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
             //验证环境是否正常
             if (!isset($result['data']['app_env']) || env('APP_ENV', '') != $result['data']['app_env']) {
+                throw new HttpException(401, '登录失效', null, [], 401);
+            }
+            //验证来源是否正常
+            $getName = app('http')->getName();
+            if ($getName != $result['data']['source']) {
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
             //验证当前登录账号是否正常

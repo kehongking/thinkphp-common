@@ -14,6 +14,7 @@ namespace KeHongKing\ThinkphpCommon;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use think\facade\Config;
+use think\exception\HttpException;
 
 class JwtCommon
 {
@@ -30,7 +31,8 @@ class JwtCommon
     protected $data = [
         'id' => 1,//登录账号唯一标识
         'source' => 'admin',//登录账户来源
-        'app_env' => 'prod',//登录环境:prod,pre,test
+        'app_env' => '',//登录环境:prod,pre,test
+        'app_name' => '',//项目名称,用于token校验
         'is_verify_account' => 0,//每次验证token时,是否需要验证账号状态 1是 0否
         'table' => 'table',
         'condition' => [],
@@ -65,6 +67,9 @@ class JwtCommon
     //生成token
     public function generateToken($data, $exp = 36000, $iss = ''): string
     {
+        $app_name = Config::get('requestLog')['app_name'] ?? '';
+        $data['app_name'] = $app_name;
+        $data['app_env'] = env('APP_ENV', '');
         $time = time();
         $token = array(
             "iss" => $iss,        //签发者 可以为空

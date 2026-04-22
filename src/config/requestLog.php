@@ -33,4 +33,6 @@ return [
     'whitelist_encryption_uri' => [
 
     ],
+    //项目名称,用于token校验
+    'app_name' => '',
 ];
