@@ -42,19 +42,17 @@ class DataExport
         foreach ($params as $ks => $vs) {
             $cells = [];
             for ($is = 0; $is < count($keys_one); $is++) {
+                $vals = null;
                 $field_arr = explode('.', $keys_one[$is]);
                 $field_arr_count = count($field_arr);
-                if ($field_arr_count == 1 && !empty($vs[$field_arr[0]])) {
+                if ($field_arr_count == 1 && isset($vs[$field_arr[0]])) {
                     $vals = $vs[$field_arr[0]];
-                } elseif ($field_arr_count == 2 && !empty($vs[$field_arr[0]][$field_arr[1]])) {
+                } elseif ($field_arr_count == 2 && isset($vs[$field_arr[0]][$field_arr[1]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]];
-                } elseif ($field_arr_count == 3 && !empty($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
+                } elseif ($field_arr_count == 3 && isset($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]][$field_arr[2]];
-                } elseif ($field_arr_count == 4 && !empty($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
+                } elseif ($field_arr_count == 4 && isset($vs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
                     $vals = $vs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]];
-                }
-                if (empty($vals)) {
-                    $vals = null;
                 }
                 $cells [] = Cell::fromValue($vals);
             }
@@ -78,19 +76,17 @@ class DataExport
             foreach ($paramss as $kks => $vvs) {
                 $cells = [];
                 for ($iis = 0; $iis < count($keys_two); $iis++) {
+                    $vals = null;
                     $field_arr = explode('.', $keys_two[$iis]);
                     $field_arr_count = count($field_arr);
-                    if ($field_arr_count == 1 && !empty($vvs[$field_arr[0]])) {
+                    if ($field_arr_count == 1 && isset($vvs[$field_arr[0]])) {
                         $vals = $vvs[$field_arr[0]];
-                    } elseif ($field_arr_count == 2 && !empty($vvs[$field_arr[0]][$field_arr[1]])) {
+                    } elseif ($field_arr_count == 2 && isset($vvs[$field_arr[0]][$field_arr[1]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]];
-                    } elseif ($field_arr_count == 3 && !empty($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
+                    } elseif ($field_arr_count == 3 && isset($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]];
-                    } elseif ($field_arr_count == 4 && !empty($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
+                    } elseif ($field_arr_count == 4 && isset($vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]])) {
                         $vals = $vvs[$field_arr[0]][$field_arr[1]][$field_arr[2]][$field_arr[3]];
-                    }
-                    if (empty($vals)) {
-                        $vals = null;
                     }
                     $cells [] = Cell::fromValue($vals);
                 }
