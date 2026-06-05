@@ -13,6 +13,7 @@ namespace KeHongKing\ThinkphpCommon;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use think\facade\Cache;
 use think\facade\Config;
 use think\exception\HttpException;
 
@@ -69,7 +70,7 @@ class JwtCommon
         $data['app_name'] = $app_name;
         $data['app_env'] = env('APP_ENV', '');
         $time = time();
-        $token = array(
+        $token_data = array(
             "iss" => $iss,        //签发者 可以为空
             "aud" => '',          //面象的用户，可以为空
             "iat" => $time,       //签发时间
@@ -82,7 +83,11 @@ class JwtCommon
             throw new HttpException(400, '私钥文件路径不存在', null, [], 400);
         }
         $privateKey = file_get_contents($privatePath);
-        return JWT::encode($token, $privateKey, 'RS256');  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
+        $token = JWT::encode($token_data, $privateKey, 'RS256');  //根据参数生成了token，可选：HS256、HS384、HS512、RS256、ES256等
+        //存入redis
+        $redis_key = "jwt-token-$app_name:" . $data['source'] . '-' . $data['id'];
+        Cache::set($redis_key, $token, $exp);
+        return $token;
     }
 
     //验证token

@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace KeHongKing\ThinkphpCommon;
 
 use think\exception\HttpException;
+use think\facade\Cache;
 use think\facade\Db;
 use think\facade\Config;
 
@@ -43,6 +44,13 @@ class Jwt
             if ($getName != $result['data']['source']) {
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
+            //验证token是否正常
+            $app_name = Config::get('requestLog')['app_name'] ?? '';
+            $redis_key = "jwt-token-$app_name:" . $result['data']['source'] . '-' . $result['data']['id'];
+            $redis_token = Cache::get($redis_key);
+            if ($redis_token != $token) {
+                throw new HttpException(401, '登录失效', null, [], 401);
+            }
             //验证当前登录账号是否正常
             $this->verifyAccount($result['data']);
             $request->request_user_id = $result['data']['id'];
@@ -59,17 +67,17 @@ class Jwt
             //需要验证登录账号
             $user = Db::name('admin_user')->where('id', $data['id'])->find();
             if (empty($user)) {
-                throw new HttpException(402, '您的账号已被删除', null, [], 402);
+                throw new HttpException(401, '您的账号已被删除', null, [], 401);
             }
             if (isset($user['delete_time']) && !empty($user['delete_time'])) {
-                throw new HttpException(402, '您的账号已被删除', null, [], 402);
+                throw new HttpException(401, '您的账号已被删除', null, [], 401);
             }
             if (isset($user['status']) && $user['status'] != 1) {
-                throw new HttpException(402, '您的账号已被禁用', null, [], 402);
+                throw new HttpException(401, '您的账号已被禁用', null, [], 401);
             }
             $role = Db::name('auth_group')->where('id', $user['group_id'])->where('status', 1)->find();
             if (empty($role)) {
-                throw new HttpException(402, '您的账号已被禁用', null, [], 402);
+                throw new HttpException(401, '您的账号已被禁用', null, [], 401);
             }
         }
     }
