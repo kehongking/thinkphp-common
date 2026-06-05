@@ -57,11 +57,17 @@ class Jwt
     {
         if ($data['is_verify_account'] == 1) {
             //需要验证登录账号
-            $user = Db::name($data['table_user'])->where($data['condition_user'])->find();
+            $user = Db::name('admin_user')->where('id', $data['id'])->find();
             if (empty($user)) {
+                throw new HttpException(402, '您的账号已被删除', null, [], 402);
+            }
+            if (isset($user['delete_time']) && !empty($user['delete_time'])) {
+                throw new HttpException(402, '您的账号已被删除', null, [], 402);
+            }
+            if (isset($user['status']) && $user['status'] != 1) {
                 throw new HttpException(402, '您的账号已被禁用', null, [], 402);
             }
-            $role = Db::name($data['table_role'])->where($data['condition_role'])->find();
+            $role = Db::name('auth_group')->where('id', $user['group_id'])->where('status', 1)->find();
             if (empty($role)) {
                 throw new HttpException(402, '您的账号已被禁用', null, [], 402);
             }

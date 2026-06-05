@@ -34,8 +34,6 @@ class JwtCommon
         'app_env' => '',//登录环境:prod,pre,test
         'app_name' => '',//项目名称,用于token校验
         'is_verify_account' => 0,//每次验证token时,是否需要验证账号状态 1是 0否
-        'table' => 'table',
-        'condition' => [],
     ];
 
     /**
