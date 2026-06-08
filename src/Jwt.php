@@ -44,12 +44,14 @@ class Jwt
             if ($getName != $result['data']['source']) {
                 throw new HttpException(401, '登录失效', null, [], 401);
             }
-            //验证token是否正常
-            $app_name = Config::get('requestLog')['app_name'] ?? '';
-            $redis_key = "jwt-token-$app_name:" . $result['data']['source'] . '-' . $result['data']['id'];
-            $redis_token = Cache::get($redis_key);
-            if ($redis_token != $token) {
-                throw new HttpException(401, '登录失效', null, [], 401);
+            //验证单点登录时token是否正常
+            if (isset($result['data']['login_type']) && $result['data']['login_type'] == 'sso') {
+                $app_name = Config::get('requestLog')['app_name'] ?? '';
+                $redis_key = "jwt-token-$app_name:" . $result['data']['source'] . '-' . $result['data']['id'];
+                $redis_token = Cache::get($redis_key);
+                if ($redis_token != $token) {
+                    throw new HttpException(401, '登录失效', null, [], 401);
+                }
             }
             //验证当前登录账号是否正常
             $this->verifyAccount($result['data']);
