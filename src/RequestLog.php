@@ -34,11 +34,16 @@ class RequestLog
         $aes_iv = '';
         //判断是否需要解密
         if ($method != 'OPTIONS' && in_array($apply_name, $aes_apply_arr) && in_array($app_env, $aes_env) && !in_array($uri, $whitelist_encryption_uri)) {
-            $aesDecrypt = $this->dataHandle($request);
-            $params = $aesDecrypt['params'];
-            $aes_key = $aesDecrypt['aes_key'];
-            $aes_iv = $aesDecrypt['aes_iv'];
-            $is_aes = 1;
+            //异步导出数据处理
+            $export_encryption = $requestLogConfig['export_encryption'];
+            $is_file_api_request = $params['is_file_api_request'] ?? '';
+            if ($export_encryption == 1 || empty($is_file_api_request)) {
+                $aesDecrypt = $this->dataHandle($request);
+                $params = $aesDecrypt['params'];
+                $aes_key = $aesDecrypt['aes_key'];
+                $aes_iv = $aesDecrypt['aes_iv'];
+                $is_aes = 1;
+            }
         }
         $request_data = $this->array_mb_convert_encoding($params);
         $request_json = json_encode($request_data, JSON_UNESCAPED_UNICODE);

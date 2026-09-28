@@ -35,4 +35,6 @@ return [
     ],
     //项目名称,用于token校验
     'app_name' => '',
+    //用于导出数据加密:默认1开启,0关闭
+    'export_encryption' => 1,
 ];
