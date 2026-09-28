@@ -34,7 +34,7 @@ class RequestLog
         $aes_iv = '';
         //判断是否需要解密
         if ($method != 'OPTIONS' && in_array($apply_name, $aes_apply_arr) && in_array($app_env, $aes_env) && !in_array($uri, $whitelist_encryption_uri)) {
-            //异步导出数据处理
+            //异步导出数据处理。
             $export_encryption = $requestLogConfig['export_encryption'];
             $is_file_api_request = $params['is_file_api_request'] ?? '';
             if ($export_encryption == 1 || empty($is_file_api_request)) {
