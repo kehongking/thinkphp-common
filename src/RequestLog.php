@@ -234,6 +234,13 @@ class RequestLog
     public function array_mb_convert_encoding($array)
     {
         if (($_FILES)) return $array;
-        return eval('return ' . mb_convert_encoding(var_export($array, true) . ';', 'UTF-8', 'UTF-8,GBK,GB2312'));
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = $this->array_mb_convert_encoding($value);
+            } elseif (is_string($value)) {
+                $array[$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8,GBK,GB2312');
+            }
+        }
+        return $array;
     }
 }
