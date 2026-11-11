@@ -238,7 +238,12 @@ class RequestLog
             if (is_array($value)) {
                 $array[$key] = $this->array_mb_convert_encoding($value);
             } elseif (is_string($value)) {
-                $array[$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8,GBK,GB2312');
+                $enc = mb_detect_encoding($value, ['UTF-8', 'GBK', 'GB2312'], true);
+                if ($enc === false) {
+                    //识别失败，直接按 UTF-8 清洗，非法字节替换
+                    $enc = 'UTF-8';
+                }
+                $array[$key] = mb_convert_encoding($value, 'UTF-8', $enc);
             }
         }
         return $array;
